@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
 		printf("SDL_Error: %s\n", SDL_GetError());
 	}
 	else {
-		window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOW);
+		window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (window == NULL) {
 			printf("SDL_Error: %s\n", SDL_GetError());
 		}
@@ -30,6 +30,9 @@ int main(int argc, char* argv[])
 			SDL_Delay(2000);
 		}
 	}
+
+	SDL_DestroyWindow(window);
+	SDL_Quit();
 	system("pause");
 	return 0;
 }
