@@ -5,13 +5,26 @@
 #pragma comment (lib, "SDL/Lib/SDL2main.lib")
 #pragma comment (lib, "SDL/Lib/SDL2.lib")
 
+bool KeyRepeat(SDL_Event e) {
+	bool ispressed = false;
+	if (e.type == SDL_KEYDOWN) {
+		
+	}
+}
+
 int test()
 {
+	SDL_Init(SDL_INIT_VIDEO);
+
+	const int SCREEN_WIDTH = 640;
+	const int SCREEN_HEIGHT = 640;
+
 	SDL_Window* window = NULL;
 	window = SDL_CreateWindow
 	(
-		"Se mueve la puta caja", SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED,
+		"Se mueve la puta caja", 
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
 		SCREEN_WIDTH,
 		SCREEN_HEIGHT,
 		SDL_WINDOW_SHOWN
@@ -19,10 +32,7 @@ int test()
 
 	// Setup renderer
 	SDL_Renderer* renderer = NULL;
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-	// Set render color to red ( background will be rendered in this color )
-	//SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	renderer = SDL_CreateRenderer(window, -1, 0); 
 
 	// Clear winow
 	SDL_RenderClear(renderer);
@@ -34,14 +44,6 @@ int test()
 	r.w = 50;
 	r.h = 50;
 
-	// Set render color to blue ( rect will be rendered in this color )
-	//SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-
-	// Render rect
-	//SDL_RenderFillRect(renderer, &r);
-
-	// Render the rect to the screen
-	//SDL_RenderPresent(renderer);
 
 	bool quit = false;
 	SDL_Event e;
@@ -65,6 +67,7 @@ int test()
 				case SDLK_LEFT:
 					r.x -= 5;
 					break;
+				case SLDK_SPACE:
 				}
 			}
 

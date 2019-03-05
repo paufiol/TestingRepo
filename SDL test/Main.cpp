@@ -23,12 +23,12 @@ enum KeyPressSurfaces //creates constants starting from 0 in succession.
 	KEY_PRESS_SURFACE_RIGHT,
 	KEY_PRESS_SURFACE_TOTAL
 };
-
+/*
 /*
 SDL_Surface* loadSurface(std::string path) {
 	SDL_Surface* loadedSurface = SDL_LoadBMP;
 }
-*/
+
 bool init(){
 	bool success = true;
 	
@@ -58,7 +58,7 @@ bool loadmedia() {
 		success = false;
 	}
 	return success;
-} */
+} 
 
 void Square() {
 	//bool success = true;
@@ -87,7 +87,7 @@ void close() {
 	SDL_Quit();
 }
 
-
+*/
 
 int main(int argc, char* argv[])
 {
