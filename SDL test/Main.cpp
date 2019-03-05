@@ -1,5 +1,5 @@
 #include <iostream>
-#include <stdio.h>
+
 #include "SDL/include/SDL.h"
 
 #include "covadonga.h"
@@ -7,7 +7,7 @@
 #pragma comment (lib, "SDL/Lib/SDL2main.lib")
 #pragma comment (lib, "SDL/Lib/SDL2.lib")
 
-
+using namespace std;
 
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
@@ -23,112 +23,154 @@ enum KeyPressSurfaces //creates constants starting from 0 in succession.
 	KEY_PRESS_SURFACE_RIGHT,
 	KEY_PRESS_SURFACE_TOTAL
 };
-/*
-/*
-SDL_Surface* loadSurface(std::string path) {
-	SDL_Surface* loadedSurface = SDL_LoadBMP;
-}
 
-bool init(){
-	bool success = true;
-	
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		printf("SDL_Error: %s\n", SDL_GetError());
-		success = false;
+bool KeyRepeat(SDL_Event e) {
+	bool ispressed = false;
+	if (e.type == SDL_KEYDOWN) {
+		ispressed = true; 
 	}
-	else {
-		window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-		if (window == NULL) {
-			printf("SDL_Error: %s\n", SDL_GetError());
-			success = false;
-		}
-		else{
-			screenSurface = SDL_GetWindowSurface(window); 
-		}
-	}
-	screenSurface = SDL_GetWindowSurface(window);
-	return success; 
-}
-/*
-bool loadmedia() {
-	bool success = true; 
-	box = SDL_LoadBMP("pene.bmp");
-	if (box == NULL) {
-		printf("SDL_Error: %s\n", SDL_GetError());
-		success = false;
-	}
-	return success;
-} 
-
-void Square() {
-	//bool success = true;
-
-	box = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-	SDL_SetRenderDrawColor(box, 255, 0, 0, 255);
-
-	SDL_RenderClear(box);
-
-	
-	
-	SDL_SetRenderDrawColor(box, 0, 0, 255, 255);
-
-	SDL_RenderFillRect(box, &r);
-
-	SDL_RenderPresent(box);
+	return ispressed;
 }
 
-void close() {
-	//SDL_FreeSurface(File);
-
-	box = NULL;
-	SDL_DestroyWindow(window);
-	window = NULL;
-	SDL_Quit();
-}
-
-*/
 
 int main(int argc, char* argv[])
 {
+	SDL_Init(SDL_INIT_VIDEO);
+
+	const int SCREEN_WIDTH = 640;
+	const int SCREEN_HEIGHT = 640;
+
+	SDL_Window* window = NULL;
+	window = SDL_CreateWindow
+	(
+		"Se mueve la puta caja",
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
+		SCREEN_WIDTH,
+		SCREEN_HEIGHT,
+		SDL_WINDOW_SHOWN
+	);
+
+	SDL_Renderer* renderer = NULL;
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+
+	SDL_RenderClear(renderer);
+
+	SDL_Rect r;
+	r.x = 270;
+	r.y = 270;
+	r.w = 100;
+	r.h = 100;
+
+	SDL_Rect bullet[30];
+	for (int i = 0; i < 30; i++) {
+		bullet[i] = { NULL, -20, 50, 15 };
+	}
 	
-	test();
-	/*
+	
+	bool up = false, down = false, right = false, left = false;
+
+	int i = 0; 
+	
+	bool fire = false;
 	bool quit = false;
 	SDL_Event e;
-	if (!init()) { return 1; }
 
-
-	
+	int timer = 0; 
 	while (!quit) { //KILLS PROGRAM WHEN CLICKING [X]
+	
+		timer++;
 		while (SDL_PollEvent(&e) != 0) {
 			if (e.type == SDL_QUIT) {
 				quit = true;
 			}
-			else if (e.type == SDL_KEYDOWN) {
-				switch (e.key.keysym.sym) { //What, the actual, FUCK
-				
+		
+			if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP) {
+				switch (e.key.keysym.sym) {
+
 				case SDLK_UP:
-					r.y += 5;
-					break;
+
+					if (e.type == SDL_KEYDOWN) {
+						up = true;
+						break;
+					}
+					else if (e.type == SDL_KEYUP) {
+						up = false;
+						break;
+					}
 				case SDLK_DOWN:
-					r.y -= 5;
-					break;
+					if (e.type == SDL_KEYDOWN) {
+						down = true;
+						break;
+					}
+					else if (e.type == SDL_KEYUP) {
+						down = false;
+						break;
+					}
 				case SDLK_RIGHT:
-					r.x += 5;
-					break;
+					if (e.type == SDL_KEYDOWN) {
+						right = true;
+						break;
+					}
+					else if (e.type == SDL_KEYUP) {
+						right = false;
+						break;
+					}
 				case SDLK_LEFT:
-					r.x -= 5;
+					if (e.type == SDL_KEYDOWN) {
+						left = true;
+						break;
+					}
+					else if (e.type == SDL_KEYUP) {
+						left = false;
+						break;
+					}
+				case SDLK_SPACE:
+					if (e.type == SDL_KEYDOWN && timer > 30) {
+						fire = true;
+							bullet[i].x = r.x + 45;
+							bullet[i].y = r.y + 45;
+							i++;
+							i = i % 30;
+							timer = 0;
+					}
 					break;
+				}
+			
+			}
+
+			
+		}
+		if (up) { r.y -= 3; }
+		if (down) { r.y += 3; }
+		if (left) { r.x -= 3; }
+		if (right) { r.x += 3; }
+
+
+		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+		SDL_RenderClear(renderer);
+
+		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+		if (fire) {
+			for (int j = 0; j < 30; j++) {
+				if (bullet[j].x < 640) {
+					SDL_RenderFillRect(renderer, &bullet[j]);
+					bullet[j].x += 5;
 				}
 			}
 		}
-		
-		Square();
-		SDL_BlitSurface(screenSurface, NULL, screenSurface, NULL);
-		SDL_UpdateWindowSurface(window);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+		SDL_RenderFillRect(renderer, &r);
+		SDL_RenderPresent(renderer);
 	}
+	window = NULL;
+	renderer = NULL;
+	SDL_DestroyWindow(window);
 
-	close();*/
+	SDL_Quit();
+
+
+
+
 	return 0;
 }
