@@ -1,11 +1,13 @@
 #include <iostream>
 
 #include "SDL/include/SDL.h"
+#include "SDL/include/SDL_image.h"
 
-#include "covadonga.h"
 
 #pragma comment (lib, "SDL/Lib/SDL2main.lib")
 #pragma comment (lib, "SDL/Lib/SDL2.lib")
+#pragma comment (lib, "SDL/lib/SDL2_image.lib")
+
 
 using namespace std;
 
@@ -36,9 +38,13 @@ bool KeyRepeat(SDL_Event e) {
 int main(int argc, char* argv[])
 {
 	SDL_Init(SDL_INIT_VIDEO);
+	
+	IMG_Init(IMG_INIT_PNG);
 
 	const int SCREEN_WIDTH = 640;
 	const int SCREEN_HEIGHT = 640;
+
+	const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 
 	SDL_Window* window = NULL;
 	window = SDL_CreateWindow
@@ -84,73 +90,24 @@ int main(int argc, char* argv[])
 			if (e.type == SDL_QUIT) {
 				quit = true;
 			}
-		
-			if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP) {
-				switch (e.key.keysym.sym) {
-
-				case SDLK_UP:
-
-					if (e.type == SDL_KEYDOWN) {
-						up = true;
-						break;
-					}
-					else if (e.type == SDL_KEYUP) {
-						up = false;
-						break;
-					}
-				case SDLK_DOWN:
-					if (e.type == SDL_KEYDOWN) {
-						down = true;
-						break;
-					}
-					else if (e.type == SDL_KEYUP) {
-						down = false;
-						break;
-					}
-				case SDLK_RIGHT:
-					if (e.type == SDL_KEYDOWN) {
-						right = true;
-						break;
-					}
-					else if (e.type == SDL_KEYUP) {
-						right = false;
-						break;
-					}
-				case SDLK_LEFT:
-					if (e.type == SDL_KEYDOWN) {
-						left = true;
-						break;
-					}
-					else if (e.type == SDL_KEYUP) {
-						left = false;
-						break;
-					}
-				case SDLK_SPACE:
-					if (e.type == SDL_KEYDOWN && timer > 30) {
-						fire = true;
-							bullet[i].x = r.x + 45;
-							bullet[i].y = r.y + 45;
-							i++;
-							i = i % 30;
-							timer = 0;
-					}
-					break;
+			if(e.key.keysym.sym == SDLK_SPACE){
+				if (e.type == SDL_KEYDOWN && timer > 20) {
+				fire = true;
+				bullet[i].x = r.x + 45;
+				bullet[i].y = r.y + 45;							
+				i++;
+				i = i % 30;
+				timer = 0;
 				}
-			
+			break;
 			}
-
-			
+		
 		}
-		if (up) { r.y -= 3; }
-		if (down) { r.y += 3; }
-		if (left) { r.x -= 3; }
-		if (right) { r.x += 3; }
-
-
 		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 		SDL_RenderClear(renderer);
 
 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+		
 		if (fire) {
 			for (int j = 0; j < 30; j++) {
 				if (bullet[j].x < 640) {
@@ -159,6 +116,14 @@ int main(int argc, char* argv[])
 				}
 			}
 		}
+
+		//if (keystate[SDL_SCANCODE_SPACE]) { bullet -= 3; }
+		if (keystate[SDL_SCANCODE_UP]) { r.y -= 3; }
+		if (keystate[SDL_SCANCODE_DOWN]) { r.y += 3; }
+		if (keystate[SDL_SCANCODE_LEFT]) { r.x -= 3; }
+		if (keystate[SDL_SCANCODE_RIGHT]) { r.x += 3; }
+
+
 		SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
 		SDL_RenderFillRect(renderer, &r);
 		SDL_RenderPresent(renderer);
@@ -167,8 +132,9 @@ int main(int argc, char* argv[])
 	renderer = NULL;
 	SDL_DestroyWindow(window);
 
-	SDL_Quit();
 
+	SDL_Quit();
+	IMG_Quit();
 
 
 
