@@ -7,7 +7,7 @@
 #pragma comment (lib, "SDL/Lib/SDL2main.lib")
 #pragma comment (lib, "SDL/Lib/SDL2.lib")
 #pragma comment (lib, "SDL/Lib/SDL2_image.lib")
-#pragma comment (lib, "SDL/lib/x86/SDL2_mixer.lib")
+#pragma comment (lib, "SDL_mixer/lib/SDL2_mixer.lib")
 
 using namespace std;
 
@@ -41,6 +41,23 @@ int main(int argc, char* argv[])
 
 	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1048);
 
+	Mix_Music* music = NULL;
+	Mix_Chunk* guns = NULL; 
+
+	Mix_VolumeMusic(32);
+
+	music = Mix_LoadMUS("sound/ripandtear.ogg");
+	if (!music) {
+		printf("Mix_LoadMUS(\"music.mp3\"): %s\n", Mix_GetError());
+		// this might be a critical error...
+	}
+	guns = Mix_LoadWAV("sound/laser.ogg");
+	if (!guns) {
+		printf("Mix_LoadMUS(\"music.mp3\"): %s\n", Mix_GetError());
+		// this might be a critical error...
+	}
+
+
 	const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 
 	SDL_Renderer* renderer = NULL;
@@ -66,9 +83,9 @@ int main(int argc, char* argv[])
 	SDL_Texture* ship = NULL;
 	SDL_Texture* projectile = NULL;
 	
-	bg = Loader("bg.png", renderer);
-	ship = Loader("nave.png", renderer);
-	projectile = Loader("projectile.png", renderer);
+	bg = Loader("img/bg.png", renderer);
+	ship = Loader("img/nave.png", renderer);
+	projectile = Loader("img/projectile.png", renderer);
 
 	SDL_Rect r;
 	r.x = 270;
@@ -76,7 +93,7 @@ int main(int argc, char* argv[])
 	r.w = 200;
 	r.h = 200;
 
-	SDL_Rect bullet[30];
+	SDL_Rect bullet[30]; //init all bullets
 	for (int i = 0; i < 30; i++) {
 		bullet[i] = { NULL, -200, 200, 200};
 	}
@@ -87,11 +104,11 @@ int main(int argc, char* argv[])
 	bool quit = false;
 	SDL_Event e;
 
+	Mix_PlayMusic(music, -1);
 	int timer = 0; 
-	while (!quit) { //KILLS PROGRAM WHEN CLICKING [X]
-	
+	while (!quit) { //Game Loop
 		timer++;
-		while (SDL_PollEvent(&e) != 0) {	
+		while (SDL_PollEvent(&e) != 0) {	//KILLS PROGRAM WHEN CLICKING [X] or ESC
 			if (e.type == SDL_QUIT || keystate[SDL_SCANCODE_ESCAPE]) {
 				quit = true;
 			}
@@ -104,7 +121,12 @@ int main(int argc, char* argv[])
 		
 		
 		if (keystate[SDL_SCANCODE_SPACE] && timer > 45) {
-			
+			if (Mix_PlayChannel(-1, guns, 0) == -1) {
+				printf("Mix_PlayChannel: %s\n", Mix_GetError());
+				// may be critical error, or maybe just no channels were free.
+				// you could allocated another channel in that case...
+				return 7;
+			}
 			fire = true;
 			bullet[i].x = r.x + 100;
 			bullet[i].y = r.y ;
@@ -115,7 +137,7 @@ int main(int argc, char* argv[])
 		
 		if (fire) {
 			for (int j = 0; j < 30; j++) {
-				if (bullet[j].x < SCREEN_WIDTH) {
+				if (bullet[j].x < SCREEN_WIDTH && bullet[j].y > 0) {
 					SDL_RenderCopy(renderer, projectile, NULL, &bullet[j]);
 					bullet[j].x += 5;
 				}
@@ -126,7 +148,7 @@ int main(int argc, char* argv[])
 		if (keystate[SDL_SCANCODE_DOWN]) { r.y += 3; }
 		if (keystate[SDL_SCANCODE_LEFT]) { r.x -= 3; }
 		if (keystate[SDL_SCANCODE_RIGHT]) { r.x += 3; }
-
+		//Los portatiles tienen la culpa de que no lea todos los inputs a la vez. COÑO
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
 		SDL_RenderCopy(renderer, ship, NULL, &r);
@@ -137,9 +159,12 @@ int main(int argc, char* argv[])
 	renderer = NULL;
 	SDL_DestroyWindow(window);
 	SDL_DestroyTexture(bg);
+	SDL_DestroyTexture(projectile);
+	SDL_DestroyTexture(ship);
 
+	Mix_CloseAudio();
 	SDL_Quit();
 	IMG_Quit();
-
+	Mix_Quit();
 	return 0;
 }
