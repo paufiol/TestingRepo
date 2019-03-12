@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	SDL_Window* window = NULL;
 	window = SDL_CreateWindow
 	(
-		"Se mueve la puta caja",
+		"NotABox",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		SCREEN_WIDTH,
@@ -82,11 +82,13 @@ int main(int argc, char* argv[])
 	SDL_Texture* bg = NULL;
 	SDL_Texture* ship = NULL;
 	SDL_Texture* projectile = NULL;
-	
-	bg = Loader("img/bg.png", renderer);
-	ship = Loader("img/nave.png", renderer);
-	projectile = Loader("img/projectile.png", renderer);
+	SDL_Texture* projectile2 = NULL;
 
+	bg = Loader("img/bg2.png", renderer);
+	ship = Loader("img/nave.png", renderer);
+	projectile = Loader("img/projectile1.png", renderer);
+	projectile2 = Loader("img/projectile2.png", renderer);
+	
 	SDL_Rect r;
 	r.x = 270;
 	r.y = 270;
@@ -95,11 +97,12 @@ int main(int argc, char* argv[])
 
 	SDL_Rect bullet[30]; //init all bullets
 	for (int i = 0; i < 30; i++) {
-		bullet[i] = { NULL, -200, 200, 200};
+		bullet[i] = { NULL, -200, 144, 200};
 	}
 
 	int i = 0; 
-	
+	int k = 0;
+
 	bool fire = false;
 	bool quit = false;
 	SDL_Event e;
@@ -108,6 +111,8 @@ int main(int argc, char* argv[])
 	int timer = 0; 
 	while (!quit) { //Game Loop
 		timer++;
+		k++;
+		k = k % 20; 
 		while (SDL_PollEvent(&e) != 0) {	//KILLS PROGRAM WHEN CLICKING [X] or ESC
 			if (e.type == SDL_QUIT || keystate[SDL_SCANCODE_ESCAPE]) {
 				quit = true;
@@ -138,7 +143,12 @@ int main(int argc, char* argv[])
 		if (fire) {
 			for (int j = 0; j < 30; j++) {
 				if (bullet[j].x < SCREEN_WIDTH && bullet[j].y > 0) {
-					SDL_RenderCopy(renderer, projectile, NULL, &bullet[j]);
+					if (k > 10) {
+						SDL_RenderCopy(renderer, projectile, NULL, &bullet[j]);
+					}
+					else {
+						SDL_RenderCopy(renderer, projectile2, NULL, &bullet[j]);
+					}
 					bullet[j].x += 5;
 				}
 			}
@@ -160,6 +170,7 @@ int main(int argc, char* argv[])
 	SDL_DestroyWindow(window);
 	SDL_DestroyTexture(bg);
 	SDL_DestroyTexture(projectile);
+	SDL_DestroyTexture(projectile2);
 	SDL_DestroyTexture(ship);
 
 	Mix_CloseAudio();
