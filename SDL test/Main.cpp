@@ -2,12 +2,12 @@
 #include <stdio.h>
 #include "SDL/include/SDL.h"
 #include "SDL/include/SDL_image.h"
-
+#include "SDL_mixer/include/SDL_mixer.h"
 
 #pragma comment (lib, "SDL/Lib/SDL2main.lib")
 #pragma comment (lib, "SDL/Lib/SDL2.lib")
 #pragma comment (lib, "SDL/Lib/SDL2_image.lib")
-
+#pragma comment (lib, "SDL/lib/x86/SDL2_mixer.lib")
 
 using namespace std;
 
@@ -20,7 +20,7 @@ SDL_Texture* Loader(const char* file, SDL_Renderer* renderer) {
 	SDL_Surface* LoadSurf = NULL;
 	SDL_Texture* texture = NULL;
 
-	LoadSurf = IMG_Load(file); //"bg.png"
+	LoadSurf = IMG_Load(file); 
 	if (LoadSurf == NULL) {
 		cout << IMG_GetError() << endl;
 		return NULL;
@@ -36,6 +36,10 @@ int main(int argc, char* argv[])
 	SDL_Init(SDL_INIT_VIDEO);
 	
 	IMG_Init(IMG_INIT_PNG);
+
+	Mix_Init(MIX_INIT_OGG);
+
+	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1048);
 
 	const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 
@@ -53,7 +57,7 @@ int main(int argc, char* argv[])
 		SDL_WINDOW_SHOWN
 	);
 
-
+	
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 
 
@@ -76,13 +80,6 @@ int main(int argc, char* argv[])
 	for (int i = 0; i < 30; i++) {
 		bullet[i] = { NULL, -200, 200, 200};
 	}
-	
-
-
-
-
-
-	bool up = false, down = false, right = false, left = false;
 
 	int i = 0; 
 	
@@ -94,8 +91,8 @@ int main(int argc, char* argv[])
 	while (!quit) { //KILLS PROGRAM WHEN CLICKING [X]
 	
 		timer++;
-		while (SDL_PollEvent(&e) != 0) {
-			if (e.type == SDL_QUIT) {
+		while (SDL_PollEvent(&e) != 0) {	
+			if (e.type == SDL_QUIT || keystate[SDL_SCANCODE_ESCAPE]) {
 				quit = true;
 			}
 		}
@@ -105,17 +102,8 @@ int main(int argc, char* argv[])
 
 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 		
-		if (fire) {
-			for (int j = 0; j < 30; j++) {
-				if (bullet[j].x < SCREEN_WIDTH) {
-					//SDL_RenderFillRect(renderer, &bullet[j]);
-					SDL_RenderCopy(renderer, projectile, NULL, &bullet[j]);
-					bullet[j].x += 5;
-				}
-			}
-		}
-
-		if (keystate[SDL_SCANCODE_SPACE] && timer > 45) { 
+		
+		if (keystate[SDL_SCANCODE_SPACE] && timer > 45) {
 			
 			fire = true;
 			bullet[i].x = r.x + 100;
@@ -125,6 +113,15 @@ int main(int argc, char* argv[])
 			timer = 0;
 		}
 		
+		if (fire) {
+			for (int j = 0; j < 30; j++) {
+				if (bullet[j].x < SCREEN_WIDTH) {
+					SDL_RenderCopy(renderer, projectile, NULL, &bullet[j]);
+					bullet[j].x += 5;
+				}
+			}
+		}
+
 		if (keystate[SDL_SCANCODE_UP]) { r.y -= 3; }
 		if (keystate[SDL_SCANCODE_DOWN]) { r.y += 3; }
 		if (keystate[SDL_SCANCODE_LEFT]) { r.x -= 3; }
