@@ -16,7 +16,7 @@ const int SCREEN_HEIGHT = 640;
 
 
 
-SDL_Texture* Loader(const char* file, SDL_Renderer* renderer) {
+SDL_Texture* Loader(const char* file, SDL_Renderer* renderer) { //Esta cosa se dedica a preparar texturas
 	SDL_Surface* LoadSurf = NULL;
 	SDL_Texture* texture = NULL;
 
@@ -33,12 +33,13 @@ SDL_Texture* Loader(const char* file, SDL_Renderer* renderer) {
 
 int main(int argc, char* argv[])
 {
+	//Init all
 	SDL_Init(SDL_INIT_VIDEO);
-	
 	IMG_Init(IMG_INIT_PNG);
-
 	Mix_Init(MIX_INIT_OGG);
 
+
+	//Audio
 	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1048);
 
 	Mix_Music* music = NULL;
@@ -77,8 +78,7 @@ int main(int argc, char* argv[])
 	
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 
-
-	SDL_Surface* LoadSurf = NULL;
+	//Create and load textures
 	SDL_Texture* bg = NULL;
 	SDL_Texture* ship = NULL;
 	SDL_Texture* projectile = NULL;
@@ -118,18 +118,12 @@ int main(int argc, char* argv[])
 				quit = true;
 			}
 		}
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 		
 		SDL_RenderCopy(renderer, bg, NULL, NULL);
-
-		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-		
 		
 		if (keystate[SDL_SCANCODE_SPACE] && timer > 45) {
 			if (Mix_PlayChannel(-1, guns, 0) == -1) {
 				printf("Mix_PlayChannel: %s\n", Mix_GetError());
-				// may be critical error, or maybe just no channels were free.
-				// you could allocated another channel in that case...
 				return 7;
 			}
 			fire = true;
@@ -160,7 +154,6 @@ int main(int argc, char* argv[])
 		if (keystate[SDL_SCANCODE_RIGHT]) { r.x += 3; }
 		//Los portatiles tienen la culpa de que no lea todos los inputs a la vez. COÑO
 
-		SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
 		SDL_RenderCopy(renderer, ship, NULL, &r);
 		SDL_RenderPresent(renderer);
 	}
