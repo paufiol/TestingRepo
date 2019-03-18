@@ -31,6 +31,23 @@ SDL_Texture* Loader(const char* file, SDL_Renderer* renderer) { //Esta cosa se d
 	return texture;
 }
 
+bool collide(SDL_Rect &objA, SDL_Rect &objB) {
+	bool collide = false;
+	if (abs((objA.x + objA.w) - objB.x) < 5) {
+		
+		for (int j = 0; j < objB.h; j++) {
+		
+			for (int i = 0; i < objA.h; i++) {
+			
+				if ((objA.y + i) == (objB.y + j)) {
+					collide = true;
+				}
+			}
+		}
+	}
+	return collide;
+}
+
 int main(int argc, char* argv[])
 {
 	//Init all
@@ -44,19 +61,29 @@ int main(int argc, char* argv[])
 
 	Mix_Music* music = NULL;
 	Mix_Chunk* guns = NULL; 
-
-	Mix_VolumeMusic(32);
+	Mix_Chunk* boom = NULL;
 
 	music = Mix_LoadMUS("sound/ripandtear.ogg");
 	if (!music) {
 		printf("Mix_LoadMUS(\"music.mp3\"): %s\n", Mix_GetError());
 		// this might be a critical error...
+		return 8;
 	}
 	guns = Mix_LoadWAV("sound/laser.ogg");
 	if (!guns) {
 		printf("Mix_LoadMUS(\"music.mp3\"): %s\n", Mix_GetError());
 		// this might be a critical error...
 	}
+	boom = Mix_LoadWAV("sound/laser.ogg");
+	if (!boom) {
+		printf("Mix_LoadMUS(\"music.mp3\"): %s\n", Mix_GetError());
+		// this might be a critical error...
+	}
+
+
+	Mix_VolumeMusic(32);
+
+	Mix_VolumeChunk(guns, 64);
 
 
 	const Uint8 *keystate = SDL_GetKeyboardState(NULL);
@@ -83,32 +110,50 @@ int main(int argc, char* argv[])
 	SDL_Texture* ship = NULL;
 	SDL_Texture* projectile = NULL;
 	SDL_Texture* projectile2 = NULL;
+	SDL_Texture* enemy = NULL; 
 
 	bg = Loader("img/bg2.png", renderer);
 	ship = Loader("img/nave.png", renderer);
 	projectile = Loader("img/projectile1.png", renderer);
 	projectile2 = Loader("img/projectile2.png", renderer);
+	enemy = Loader("img/nave2.png", renderer);
 	
 	SDL_Rect r;
-	r.x = 270;
-	r.y = 270;
-	r.w = 200;
-	r.h = 200;
+	r.x = 100;
+	r.y = 250;
+	r.w = 100;
+	r.h = 100;
 
-	SDL_Rect bullet[30]; //init all bullets
-	for (int i = 0; i < 30; i++) {
-		bullet[i] = { NULL, -200, 144, 200};
+	SDL_Rect enemySq;
+	enemySq.x = 500;
+	enemySq.y = 250;
+	enemySq.w = 100;
+	enemySq.h = 100;
+
+	SDL_Rect spriteEnemies;
+	spriteEnemies.w = 100;
+	spriteEnemies.h = 100;
+	spriteEnemies.x = 100;
+	spriteEnemies.y = 0;
+
+	SDL_Rect bullet[12]; //init all bullets
+	for (int i = 0; i < 12; i++) {
+		bullet[i] = { NULL, -200, 72, 100};
 	}
 
 	int i = 0; 
 	int k = 0;
 
+	bool isDead = false;
 	bool fire = false;
 	bool quit = false;
 	SDL_Event e;
 
 	Mix_PlayMusic(music, -1);
+	
 	int timer = 0; 
+	int timerdeath = 0;
+
 	while (!quit) { //Game Loop
 		timer++;
 		k++;
@@ -135,8 +180,22 @@ int main(int argc, char* argv[])
 		}
 		
 		if (fire) {
-			for (int j = 0; j < 30; j++) {
+			for (int j = 0; j < 12; j++) {
 				if (bullet[j].x < SCREEN_WIDTH && bullet[j].y > 0) {
+					
+					if (collide(bullet[j], enemySq)) {
+						spriteEnemies.x = 0;
+						isDead = true;
+
+						if (Mix_PlayChannel(-1, boom, 0) == -1) {
+							printf("Mix_PlayChannel: %s\n", Mix_GetError());
+							return 7;
+						}
+						//SDL_RenderDrawRect(renderer, &enemySq);
+					}
+					
+					
+					
 					if (k > 10) {
 						SDL_RenderCopy(renderer, projectile, NULL, &bullet[j]);
 					}
@@ -148,13 +207,21 @@ int main(int argc, char* argv[])
 			}
 		}
 
+
 		if (keystate[SDL_SCANCODE_UP]) { r.y -= 3; }
 		if (keystate[SDL_SCANCODE_DOWN]) { r.y += 3; }
 		if (keystate[SDL_SCANCODE_LEFT]) { r.x -= 3; }
 		if (keystate[SDL_SCANCODE_RIGHT]) { r.x += 3; }
 		//Los portatiles tienen la culpa de que no lea todos los inputs a la vez. COÑO
 
+		if (isDead) {
+			timerdeath++;
+		}
+
 		SDL_RenderCopy(renderer, ship, NULL, &r);
+		if (timerdeath < 60) {
+			SDL_RenderCopy(renderer, enemy, &spriteEnemies, &enemySq);
+		}
 		SDL_RenderPresent(renderer);
 	}
 	
