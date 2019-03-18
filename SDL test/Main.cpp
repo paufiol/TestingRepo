@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdio.h>
+#include <windows.h>
 #include "SDL/include/SDL.h"
 #include "SDL/include/SDL_image.h"
 #include "SDL_mixer/include/SDL_mixer.h"
@@ -115,7 +116,7 @@ int main(int argc, char* argv[])
 	SDL_Texture* enemy = NULL; 
 
 	bg = Loader("img/bg2.png", renderer);
-	ship = Loader("img/nave.png", renderer);
+	ship = Loader("img/nave3.png", renderer);
 	projectile = Loader("img/projectile1.png", renderer);
 	projectile2 = Loader("img/projectile2.png", renderer);
 	enemy = Loader("img/nave2.png", renderer);
@@ -132,21 +133,29 @@ int main(int argc, char* argv[])
 	enemySq.w = 100;
 	enemySq.h = 100;
 
-	SDL_Rect spriteEnemies;
-	spriteEnemies.w = 100;
-	spriteEnemies.h = 100;
-	spriteEnemies.x = 100;
-	spriteEnemies.y = 0;
+	SDL_Rect sprite[2];
+	for (int i = 0; i < 2; i++) {
+		sprite[i].w = 100;
+		sprite[i].h = 100;
+		sprite[i].x = 100;
+		sprite[i].y = 0;
+	}
 
 	SDL_Rect bullet[12]; //init all bullets
 	for (int i = 0; i < 12; i++) {
 		bullet[i] = { NULL, -200, 72, 100};
 	}
 
+	SDL_Rect bullet2[12]; //init all bullets enemies
+	for (int i = 0; i < 12; i++) {
+		bullet2[i] = { NULL, -200, 72, 100 };
+	}
+
 	int i = 0; 
 	int k = 0;
 
 	bool isDead = false;
+	bool isDead2 = false;
 	bool fire = false;
 	bool quit = false;
 	SDL_Event e;
@@ -154,7 +163,10 @@ int main(int argc, char* argv[])
 	Mix_PlayMusic(music, -1);
 	
 	int timer = 0; 
+	int timer2 = 0; 
 	int timerdeath = 0;
+	int timerdeath2 = 0;
+	int lifecount[2] = { 6,6 };
 
 	while (!quit) { //Game Loop
 		timer++;
@@ -177,28 +189,43 @@ int main(int argc, char* argv[])
 			bullet[i].x = r.x + 100;
 			bullet[i].y = r.y ;
 			i++;
-			i = i % 30;
+			i = i % 12;
+			timer = 0;
+		}
+
+		if (keystate[SDL_SCANCODE_KP_PLUS] && timer > 45) {
+			if (Mix_PlayChannel(-1, guns, 0) == -1) {
+				printf("Mix_PlayChannel: %s\n", Mix_GetError());
+				return 7;
+			}
+			fire = true;
+			bullet2[i].x = enemySq.x;
+			bullet2[i].y = enemySq.y;
+			i++;
+			i = i % 12;
 			timer = 0;
 		}
 		
 		if (fire) {
 			for (int j = 0; j < 12; j++) {
 				if (bullet[j].x < SCREEN_WIDTH && bullet[j].y > 0) {
-					
-					if (collide(bullet[j], enemySq)) {
-						spriteEnemies.x = 0;
-						isDead = true;
+
+					if (collide(bullet[j], enemySq) && !isDead2) {
+						sprite[0].x = 0;
+						if (lifecount[0] == 0) {
+							isDead2 = true;
+						}
+						else {
+							lifecount[0]--;
+						}
 
 						if (Mix_PlayChannel(-1, boom, 0) == -1) {
 							printf("Mix_PlayChannel: %s\n", Mix_GetError());
 							return 7;
 						}
-						//SDL_RenderDrawRect(renderer, &enemySq);
 					}
-					
-					
-					
 					if (k > 10) {
+						//SDL_RenderCopyEx(renderer, projectile, NULL, &bullet[j], NULL, NULL, SDL_FLIP_HORIZONTAL);
 						SDL_RenderCopy(renderer, projectile, NULL, &bullet[j]);
 					}
 					else {
@@ -207,22 +234,66 @@ int main(int argc, char* argv[])
 					bullet[j].x += 5;
 				}
 			}
+			for (int j = 0; j < 12; j++) {
+				if (bullet2[j].x < SCREEN_WIDTH && bullet2[j].y > 0) { //P2 bullets
+
+					if (collide(bullet2[j], r) && !isDead) {
+						sprite[1].x = 0;
+						if (lifecount[1] == 0) {
+							isDead = true;
+						}
+						else {
+							lifecount[1]--;
+						}
+
+						if (Mix_PlayChannel(-1, boom, 0) == -1) {
+							printf("Mix_PlayChannel: %s\n", Mix_GetError());
+							return 7;
+						}
+					}
+					if (k > 10) {
+						SDL_RenderCopyEx(renderer, projectile, NULL, &bullet2[j], NULL, NULL, SDL_FLIP_HORIZONTAL);
+						
+					}
+					else {
+						SDL_RenderCopyEx(renderer, projectile2, NULL, &bullet2[j], NULL, NULL, SDL_FLIP_HORIZONTAL);
+					}
+					bullet2[j].x -= 5;
+				}
+			}
 		}
 
-
-		if (keystate[SDL_SCANCODE_UP]) { r.y -= 3; }
-		if (keystate[SDL_SCANCODE_DOWN]) { r.y += 3; }
-		if (keystate[SDL_SCANCODE_LEFT]) { r.x -= 3; }
-		if (keystate[SDL_SCANCODE_RIGHT]) { r.x += 3; }
-		//Los portatiles tienen la culpa de que no lea todos los inputs a la vez. COÑO
+		//if (!isDead) {
+			if (keystate[SDL_SCANCODE_W]) { r.y -= 3; }
+			if (keystate[SDL_SCANCODE_A]) { r.x -= 3; }
+			if (keystate[SDL_SCANCODE_S]) { r.y += 3; }
+			if (keystate[SDL_SCANCODE_D]) { r.x += 3; }
+			//Los portatiles tienen la culpa de que no lea todos los inputs a la vez.
+		
+		//if (!isDead2) {
+			if (keystate[SDL_SCANCODE_UP]) { enemySq.y -= 3; }
+			if (keystate[SDL_SCANCODE_DOWN]) { enemySq.y += 3; }
+			if (keystate[SDL_SCANCODE_LEFT]) { enemySq.x -= 3; }
+			if (keystate[SDL_SCANCODE_RIGHT]) { enemySq.x += 3; }
+		
 
 		if (isDead) {
 			timerdeath++;
 		}
+		if (isDead2) {
+			timerdeath2++;
+		}
 
-		SDL_RenderCopy(renderer, ship, NULL, &r);
+		
+		
+		if (timerdeath2 < 60) {
+			SDL_RenderCopy(renderer, enemy, &sprite[0], &enemySq);
+		}
 		if (timerdeath < 60) {
-			SDL_RenderCopy(renderer, enemy, &spriteEnemies, &enemySq);
+			if (SDL_RenderCopyEx(renderer, ship, &sprite[1], &r, NULL, NULL, SDL_FLIP_HORIZONTAL) < 0) {
+				const char* a = SDL_GetError();
+				OutputDebugString(a);
+			}
 		}
 		SDL_RenderPresent(renderer);
 	}
@@ -234,6 +305,7 @@ int main(int argc, char* argv[])
 	SDL_DestroyTexture(projectile);
 	SDL_DestroyTexture(projectile2);
 	SDL_DestroyTexture(ship);
+	SDL_DestroyTexture(enemy);
 
 	Mix_CloseAudio();
 	SDL_Quit();
