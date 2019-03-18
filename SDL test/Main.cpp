@@ -14,7 +14,7 @@ using namespace std;
 const int SCREEN_WIDTH = 960;
 const int SCREEN_HEIGHT = 640;
 
-
+//#define LOG(txt) OutputDebugString(txt)
 
 SDL_Texture* Loader(const char* file, SDL_Renderer* renderer) { //Esta cosa se dedica a preparar texturas
 	SDL_Surface* LoadSurf = NULL;
@@ -65,19 +65,21 @@ int main(int argc, char* argv[])
 
 	music = Mix_LoadMUS("sound/ripandtear.ogg");
 	if (!music) {
-		printf("Mix_LoadMUS(\"music.mp3\"): %s\n", Mix_GetError());
+		//LOG("Mix_LoadMUS(\"music.mp3\"): %s\n", Mix_GetError());
 		// this might be a critical error...
-		return 8;
+		
 	}
 	guns = Mix_LoadWAV("sound/laser.ogg");
 	if (!guns) {
-		printf("Mix_LoadMUS(\"music.mp3\"): %s\n", Mix_GetError());
+		//LOG("Mix_LoadMUS(\"music.mp3\"): %s\n", Mix_GetError());
 		// this might be a critical error...
 	}
-	boom = Mix_LoadWAV("sound/laser.ogg");
+	boom = Mix_LoadWAV("sound/boom2.ogg");
 	if (!boom) {
-		printf("Mix_LoadMUS(\"music.mp3\"): %s\n", Mix_GetError());
+		//printf("Mix_LoadMUS(\"music.mp3\"): %s\n", Mix_GetError());
+		const char* a = Mix_GetError();
 		// this might be a critical error...
+		return 8;
 	}
 
 
