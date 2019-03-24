@@ -80,5 +80,7 @@ SDL_Texture* const ModuleTextures::Load(const char* path)
 	}
 
 	SDL_FreeSurface(LoadSurf);
+
+
 	return texture;
 }

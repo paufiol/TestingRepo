@@ -17,7 +17,7 @@ public:
 	bool Init();
 	bool CleanUp();
 
-	SDL_Texture* const Load(const char* path);
+	SDL_Texture* const Load(const char* path); //WTF Why is it const.
 
 public:
 	SDL_Texture * textures[MAX_TEXTURES];
