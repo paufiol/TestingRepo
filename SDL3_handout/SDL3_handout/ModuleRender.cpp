@@ -5,6 +5,9 @@
 #include "ModuleTextures.h"
 #include "SDL/include/SDL.h"
 
+int timer[10] = { 0 }; //WTF where do I put this.
+bool right = false;
+
 ModuleRender::ModuleRender() : Module()
 {}
 
@@ -34,7 +37,8 @@ bool ModuleRender::Init()
 
 	// TODO 9: load a texture "test.png" to test is everything works well
 	App->textures->textures[1] = App->textures->Load("test.png");
-
+	App->textures->textures[2] = App->textures->Load("bg.png");
+	
 	return ret;
 }
 
@@ -44,9 +48,17 @@ update_status ModuleRender::PreUpdate()
 	// TODO 7: Clear the screen to black before starting every frame
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
+	
 	// TODO 10: Blit our test texture to check functionality
-	Blit(App->textures->textures[1], 100, 100, nullptr);
+	if (timer[0] > -2000 && !right) { timer[0]--; }
+	if (timer[0] == -2000) { right = true; }
+	if (timer[0] < 0 && right) { timer[0]++; }
+	if (timer[0] == 0) { right = false; }
 
+
+	
+	Blit(App->textures->textures[2], timer[0], 0, nullptr);
+	Blit(App->textures->textures[1], 100, 100, nullptr);
 	return update_status::UPDATE_CONTINUE;
 }
 

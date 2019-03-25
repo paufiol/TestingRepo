@@ -13,6 +13,8 @@ enum update_status
 	UPDATE_STOP,
 	UPDATE_ERROR
 };
+//Clocks and timers -------
+
 
 // Useful typedefs ---------
 typedef unsigned int uint;

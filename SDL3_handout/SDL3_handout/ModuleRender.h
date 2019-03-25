@@ -15,6 +15,7 @@ public:
 
 	bool Init();
 	update_status PostUpdate();
+	
 	update_status PreUpdate();
 	bool CleanUp();
 
