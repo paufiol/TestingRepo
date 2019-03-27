@@ -6,8 +6,6 @@
 
 // Reference at https://www.youtube.com/watch?v=OEhmUuehGOA
 
-float timer = 0; 
-bool up = true;
 
 ModuleBackground::ModuleBackground()
 {

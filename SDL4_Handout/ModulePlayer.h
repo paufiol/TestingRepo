@@ -19,6 +19,9 @@ public:
 
 public:
 
+	bool jumplock = false; 
+	bool punchlock = false;
+
 	SDL_Texture* graphics = nullptr;
 	Animation idle;
 	Animation forward;

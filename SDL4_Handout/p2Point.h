@@ -8,7 +8,7 @@
 #include "Globals.h"
 #include <math.h>
 
-template<class TYPE>
+template<class TYPE> //WTF is this.
 class p2Point
 {
 public:

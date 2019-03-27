@@ -25,6 +25,10 @@ public:
 	Animation flag;
 	Animation girl;
 
+
+	float timer = 0;
+	bool up = true;
+
 };
 
 #endif
