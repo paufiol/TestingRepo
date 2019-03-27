@@ -35,7 +35,7 @@ bool ModuleAudio::Init()
 
 	Mix_VolumeMusic(DEFAULT_VOLUME);
 	
-	if (!PlayMusic("ripandtear.ogg", -1)) {
+	if (!PlayMusic("ripandtear.ogg", -1)) { //HAURIA DE ESTAR A START();
 		//update = UPDATE_ERROR;
 	}
 
