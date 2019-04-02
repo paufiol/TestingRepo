@@ -91,7 +91,7 @@ update_status ModulePlayer::Update()
 	if (jumplock)
 	{
 		current_animation = &jump;
-		if (current_animation->current_frame < 4) { position.y -= speed; }
+		if (current_animation->current_frame < 3) { position.y -= speed; }
 		else { position.y += speed; }
 		if ( ((current_animation->current_frame)+0.2f) >= current_animation->last_frame ) {
 			jumplock = false;

@@ -4,8 +4,6 @@
 #include "SDL_mixer/include/SDL_mixer.h"
 #include "SDL/include/SDL.h"
 
-
-
 ModuleAudio::ModuleAudio() : Module()
 {
 	for (int i = 0; i < MAX_CHUNKS; i++) {
@@ -36,33 +34,15 @@ bool ModuleAudio::Init()
 	}
 
 	Mix_VolumeMusic(DEFAULT_VOLUME);
-	
-	if (!PlayMusic("ripandtear.ogg", -1)) { //HAURIA DE ESTAR A START();
-		//update = UPDATE_ERROR;
-		LOG("")
-	}
 
+	chunks[0] = LoadChunk("rtype/explosion.wav");
 	return ret;
 }
 
 update_status ModuleAudio::Update() {
 	update_status update = UPDATE_CONTINUE;
 
-
-	chunks[0] = LoadChunk("pum.ogg");
-
-	/*if (App->input->keyboard[SDL_SCANCODE_Q] == 1) {
-		
-	}*/
-
-
-
-	//WTF where do I place this loop/ where do I place whatever/ what is it asking.
-	/*
-	for (int i = 128; i > 0; i -= 4) {
-		Mix_VolumeMusic(i);
-	}
-	*/
+	
 
 
 
@@ -94,6 +74,20 @@ Mix_Chunk * ModuleAudio::LoadChunk(const char* path)
 	return chunk;
 }
 
+bool ModuleAudio::PlayChunk(Mix_Chunk * sound)
+{
+	Mix_PlayChannel(-1, sound, 1);
+	return true;
+}
+
+bool ModuleAudio::StopMusic()
+{
+	while (Mix_FadeOutMusic(2000) && Mix_PlayingMusic()) {
+		SDL_Delay(100);
+	}
+	return true;
+}
+
 bool ModuleAudio::PlayMusic(const char* path, int loops)
 {
 	bool ret = true;
@@ -107,7 +101,7 @@ bool ModuleAudio::PlayMusic(const char* path, int loops)
 		ret = false; 
 	};
 
-	if (Mix_FadeInMusic(music, loops, 3000) < 0) {
+	if (Mix_FadeInMusic(music, loops, 2000) < 0) {
 		LOG("Mix_PlayMusic: %s\n", Mix_GetError());
 		ret = false;
 	}
