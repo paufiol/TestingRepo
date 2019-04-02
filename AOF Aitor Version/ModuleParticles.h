@@ -47,6 +47,7 @@ public:
 
 	Particle kouken;
 	Particle laser;
+	
 };
 
 #endif // __MODULEPARTICLES_H__

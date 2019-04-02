@@ -42,6 +42,14 @@ ModulePlayer::ModulePlayer()
 	punch.PushBack({ 543, 348,  89, 108});
 	punch.speed = 0.2f;   
 
+	koukenR.PushBack({ 176, 873, 66, 112 });
+	koukenR.PushBack({ 242, 873, 88, 112 });
+	koukenR.PushBack({ 330, 884, 85, 96 });
+	koukenR.PushBack({ 415, 888, 81, 97 });
+	koukenR.PushBack({ 496, 877, 102, 108 });
+	koukenR.speed = 0.2f;
+
+
 	//AQUI
 	// TODO 4: Make ryu walk backwards with the correct animations
 }
@@ -89,8 +97,9 @@ update_status ModulePlayer::Update()
 			punchlock = true; 
 		}
 
-		if (App->input->keyboard[SDL_SCANCODE_1] == KEY_STATE::KEY_DOWN) {
-			App->particles->AddParticle(App->particles->kouken, position.x, position.y + 50, 0);
+		if (App->input->keyboard[SDL_SCANCODE_F] == KEY_STATE::KEY_DOWN) {
+			current_animation = &koukenR;
+			App->particles->AddParticle(App->particles->kouken, position.x + 20, position.y + 50, 0);
 			//App->audio->PlayChunk(App->audio->chunks[0]);
 		}
 	}

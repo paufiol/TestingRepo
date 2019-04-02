@@ -4,6 +4,7 @@
 #include "ModuleTextures.h"
 #include "ModuleRender.h"
 #include "ModuleParticles.h"
+#include "ModuleAudio.h"
 
 #include "SDL/include/SDL_timer.h"
 
@@ -20,15 +21,14 @@ ModuleParticles::~ModuleParticles()
 bool ModuleParticles::Start()
 {
 	LOG("Loading particles");
-	graphics = App->textures->Load("test.png");
+	graphics = App->textures->Load("ryo.png");
 
 	// Explosion particle //LAS COORDENADAS SE TIENEN QUE CAMBIAR
-	kouken.anim.PushBack({ 632, 348, 57, 108 });
-	kouken.anim.PushBack({313, 296, 33, 30});
-	kouken.anim.PushBack({346, 296, 33, 30});
-	kouken.anim.PushBack({382, 296, 33, 30});
-	kouken.anim.PushBack({419, 296, 33, 30});
-	kouken.anim.PushBack({457, 296, 33, 30});
+	//kouken.anim.PushBack({ 632, 348, 57, 108 });
+	kouken.anim.PushBack({652, 883, 30, 102});
+	kouken.anim.PushBack({598, 879, 54, 106});
+	kouken.anim.PushBack({736, 905, 72, 47});
+	kouken.anim.PushBack({682, 913, 54, 39});
 	kouken.anim.loop = true;
 	kouken.anim.speed = 0.3f;
 	kouken.speed.x = 1;
@@ -57,6 +57,7 @@ bool ModuleParticles::CleanUp()
 // Update: draw background
 update_status ModuleParticles::Update()
 {
+	App->audio->koukenFx = App->audio->LoadChunk("kouken.ogg");
 	for(uint i = 0; i < MAX_ACTIVE_PARTICLES; ++i)
 	{
 		Particle* p = active[i];
@@ -76,6 +77,8 @@ update_status ModuleParticles::Update()
 			{
 				p->fx_played = true;
 				// Play particle fx here //AQUI SONIDO HADDOKEN
+				
+				App->audio->PlayChunk(App->audio->koukenFx);
 			}
 		}
 	}

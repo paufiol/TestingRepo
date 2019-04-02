@@ -28,6 +28,8 @@ public:
 public:
 	Mix_Chunk * chunks[MAX_CHUNKS];
 	Mix_Music * music; 
+
+	Mix_Chunk* koukenFx;
 };
 
 #endif // __ModuleAudio_H__
