@@ -22,6 +22,8 @@ public:
 	bool CleanUp() ;
 	Mix_Chunk * LoadChunk(const char* path);
 	bool PlayMusic(const char* path, int loops);
+	bool PlayChunk(Mix_Chunk * sound);
+	void StopMusic();
 
 public:
 	Mix_Chunk * chunks[MAX_CHUNKS];

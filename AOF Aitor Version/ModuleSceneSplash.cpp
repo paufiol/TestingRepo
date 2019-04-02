@@ -8,15 +8,13 @@
 #include "ModuleFadeToBlack.h"
 #include "Application.h"
 #include "ModuleAudio.h"
-
+#include "ModuleAudio.h"
 #include "SDL/include/SDL.h"
 
 // Reference at https://www.youtube.com/watch?v=OEhmUuehGOA
 
 ModuleSceneSplash::ModuleSceneSplash()
 {
-
-
 	// Background / sky
 	background.x = 15;
 	background.y = 0;
@@ -31,6 +29,7 @@ ModuleSceneSplash::~ModuleSceneSplash()
 bool ModuleSceneSplash::Start()
 {
 	LOG("Loading Splash scene");
+	App->audio->PlayMusic("Splash_song.ogg", -1);
 	graphics = App->textures->Load("Splash.png");
 
 	return true;
@@ -40,6 +39,7 @@ bool ModuleSceneSplash::Start()
 bool ModuleSceneSplash::CleanUp()
 {
 	SDL_DestroyTexture(graphics);
+	App->audio->StopMusic();
 	LOG("Unloading Splash scene");
 
 	return true;

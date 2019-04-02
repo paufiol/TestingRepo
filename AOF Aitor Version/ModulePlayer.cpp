@@ -4,6 +4,8 @@
 #include "ModuleInput.h"
 #include "ModuleRender.h"
 #include "ModulePlayer.h"
+#include "ModuleParticles.h"
+#include "ModuleAudio.h"
 
 // Reference at https://www.youtube.com/watch?v=OEhmUuehGOA
 
@@ -16,8 +18,6 @@ ModulePlayer::ModulePlayer()
 	idle.PushBack({0, 8, 66, 108});
 	idle.PushBack({66, 8, 67 , 108});
 	idle.PushBack({133, 8, 69, 108 });
-	//idle.PushBack({8, 11, 60, 93});
-	//idle.PushBack({8 , 12, 60, 92});
 	idle.speed = 0.1f;
 
 	// walk forward animation (arcade sprite sheet)
@@ -41,6 +41,8 @@ ModulePlayer::ModulePlayer()
 	punch.PushBack({ 485, 348,  58, 108});
 	punch.PushBack({ 543, 348,  89, 108});
 	punch.speed = 0.2f;   
+
+	//AQUI
 	// TODO 4: Make ryu walk backwards with the correct animations
 }
 
@@ -85,6 +87,11 @@ update_status ModulePlayer::Update()
 		if (App->input->keyboard[SDL_SCANCODE_Q] == 1) {
 			current_animation = &punch;
 			punchlock = true; 
+		}
+
+		if (App->input->keyboard[SDL_SCANCODE_1] == KEY_STATE::KEY_DOWN) {
+			App->particles->AddParticle(App->particles->kouken, position.x, position.y + 50, 0);
+			//App->audio->PlayChunk(App->audio->chunks[0]);
 		}
 	}
 	

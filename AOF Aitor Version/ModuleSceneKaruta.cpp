@@ -6,7 +6,7 @@
 #include "ModulePlayer.h"
 #include "ModuleInput.h"
 #include "ModuleFadeToBlack.h"
-
+#include "ModuleAudio.h"
 #include "SDL/include/SDL.h"
 
 // Reference at https://youtu.be/6OlenbCC4WI?t=382
@@ -27,9 +27,10 @@ bool ModuleSceneKaruta::Start()
 {
 	LOG("Loading background assets");
 	bool ret = true;
+	App->audio->PlayMusic("Splash_song.ogg", -1);
 	graphics = App->textures->Load("Karuta.png");
 
-	// TODO 1: Enable (and properly disable) the player module
+	
 	App->player->Enable();
 	return ret;
 }
@@ -37,7 +38,8 @@ bool ModuleSceneKaruta::Start()
 // Load assets
 bool ModuleSceneKaruta::CleanUp()
 {
-	// TODO 5: Remove all memory leaks
+	
+	App->audio->StopMusic();
 	SDL_DestroyTexture(graphics);
 	LOG("Unloading Karuta stage");
 

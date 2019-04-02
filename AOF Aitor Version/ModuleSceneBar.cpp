@@ -6,6 +6,7 @@
 #include "ModulePlayer.h"
 #include "ModuleInput.h"
 #include "ModuleFadeToBlack.h"
+#include "ModuleAudio.h"
 
 #include "SDL/include/SDL.h"
 
@@ -31,7 +32,7 @@ ModuleSceneBar::~ModuleSceneBar()
 bool ModuleSceneBar::Start()
 {
 	LOG("Loading Bar scene");
-	
+	App->audio->PlayMusic("Splash_song.ogg", -1);
 	graphics = App->textures->Load("Bar.png");
 
 	// TODO 1: Enable (and properly disable) the player module
@@ -43,6 +44,7 @@ bool ModuleSceneBar::Start()
 // UnLoad assets
 bool ModuleSceneBar::CleanUp()
 {
+	App->audio->StopMusic();
 	SDL_DestroyTexture(graphics);
 	LOG("Unloading Bar scene");
 

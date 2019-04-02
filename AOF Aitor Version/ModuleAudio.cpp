@@ -36,11 +36,7 @@ bool ModuleAudio::Init()
 	}
 
 	Mix_VolumeMusic(DEFAULT_VOLUME);
-	
-	if (!PlayMusic("ripandtear.ogg", -1)) { //HAURIA DE ESTAR A START();
-		//update = UPDATE_ERROR;
-		LOG("")
-	}
+	chunks[0] = LoadChunk("honda.ogg"); //AQUI
 
 	return ret;
 }
@@ -49,20 +45,7 @@ update_status ModuleAudio::Update() {
 	update_status update = UPDATE_CONTINUE;
 
 
-	chunks[0] = LoadChunk("pum.ogg");
 
-	/*if (App->input->keyboard[SDL_SCANCODE_Q] == 1) {
-		
-	}*/
-
-
-
-	//WTF where do I place this loop/ where do I place whatever/ what is it asking.
-	/*
-	for (int i = 128; i > 0; i -= 4) {
-		Mix_VolumeMusic(i);
-	}
-	*/
 
 
 
@@ -72,15 +55,20 @@ update_status ModuleAudio::Update() {
 bool ModuleAudio::CleanUp()
 {	
 	bool ret = true;
-	while (!Mix_FadeOutMusic(3000) && Mix_PlayingMusic()) {
-		// wait for any fades to complete
-		SDL_Delay(100);
-	}
-
+	
+	
 	Mix_CloseAudio();
 	Mix_Quit();
 
 	return ret;
+}
+
+void ModuleAudio::StopMusic() {
+	/*while (!Mix_FadeOutMusic(2000) && Mix_PlayingMusic()) {
+		// wait for any fades to complete
+		SDL_Delay(100);
+	}*/
+	Mix_FadeOutMusic(2000);
 }
 
 Mix_Chunk * ModuleAudio::LoadChunk(const char* path)
@@ -92,6 +80,12 @@ Mix_Chunk * ModuleAudio::LoadChunk(const char* path)
 			
 	};
 	return chunk;
+}
+
+bool ModuleAudio::PlayChunk(Mix_Chunk * sound)
+{
+	Mix_PlayChannel(-1, sound, 1);
+	return true;
 }
 
 bool ModuleAudio::PlayMusic(const char* path, int loops)

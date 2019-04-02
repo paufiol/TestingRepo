@@ -7,7 +7,7 @@
 #include "ModulePlayer.h"
 #include "ModuleInput.h"
 #include "ModuleFadeToBlack.h"
-
+#include "ModuleAudio.h"
 #include "SDL/include/SDL.h"
 
 // Reference at https://www.youtube.com/watch?v=OEhmUuehGOA
@@ -30,7 +30,7 @@ ModuleSceneEnd::~ModuleSceneEnd()
 bool ModuleSceneEnd::Start()
 {
 	LOG("Loading End scene");
-
+	App->audio->PlayMusic("Splash_song.ogg", -1);
 	graphics = App->textures->Load("EndScreen.png");
 	App->player->Disable();
 
@@ -40,6 +40,7 @@ bool ModuleSceneEnd::Start()
 // UnLoad assets
 bool ModuleSceneEnd::CleanUp()
 {
+	App->audio->StopMusic();
 	SDL_DestroyTexture(graphics);
 	LOG("Unloading Splash scene");
 	
