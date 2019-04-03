@@ -51,7 +51,7 @@ update_status ModuleSceneKaruta::Update()
 {
 	
 
-	App->render->Blit(graphics, 0, 0, &background, 0.75f);
+	/*App->render->Blit(graphics, 0, 0, &background, 0.75f);*/
 	// TODO 2: make so pressing SPACE the KEN stage is loaded
 	if (App->input->keyboard[SDL_SCANCODE_SPACE] == 1)
 	{

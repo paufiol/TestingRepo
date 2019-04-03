@@ -21,6 +21,7 @@ public:
 
 	bool jumplock = false; 
 	bool punchlock = false;
+	bool koukenlock = false;
 
 	SDL_Texture* graphics = nullptr;
 	Animation idle;

@@ -73,7 +73,7 @@ update_status ModulePlayer::Update()
 
 	int speed = 1;
 	 
-	if(!jumplock && !punchlock)
+	if(!jumplock && !punchlock && !koukenlock)
 	{
 		if (App->input->keyboard[SDL_SCANCODE_D] == 1)
 		{
@@ -99,8 +99,10 @@ update_status ModulePlayer::Update()
 
 		if (App->input->keyboard[SDL_SCANCODE_F] == KEY_STATE::KEY_DOWN) {
 			current_animation = &koukenR;
-			App->particles->AddParticle(App->particles->kouken, position.x + 20, position.y + 50, 0);
+			App->particles->AddParticle(App->particles->kouken, position.x , position.y , 0);
+
 			//App->audio->PlayChunk(App->audio->chunks[0]);
+			koukenlock = true;
 		}
 	}
 	
@@ -120,6 +122,14 @@ update_status ModulePlayer::Update()
 		
 		if (((current_animation->current_frame) + 0.2f) >= current_animation->last_frame) {
 			punchlock = false;
+		}
+	}
+	if (koukenlock)
+	{
+		current_animation = &koukenR;
+
+		if (((current_animation->current_frame) + 0.2f) >= current_animation->last_frame) {
+			koukenlock = false;
 		}
 	}
 

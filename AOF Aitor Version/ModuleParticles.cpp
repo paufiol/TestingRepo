@@ -5,6 +5,7 @@
 #include "ModuleRender.h"
 #include "ModuleParticles.h"
 #include "ModuleAudio.h"
+#include "ModulePlayer.h"
 
 #include "SDL/include/SDL_timer.h"
 
@@ -25,14 +26,19 @@ bool ModuleParticles::Start()
 
 	// Explosion particle //LAS COORDENADAS SE TIENEN QUE CAMBIAR
 	//kouken.anim.PushBack({ 632, 348, 57, 108 });
-	kouken.anim.PushBack({652, 883, 30, 102});
-	kouken.anim.PushBack({598, 879, 54, 106});
-	kouken.anim.PushBack({736, 905, 72, 47});
-	kouken.anim.PushBack({682, 913, 54, 39});
-	kouken.anim.loop = true;
-	kouken.anim.speed = 0.3f;
-	kouken.speed.x = 1;
+	kouken.anim.PushBack({ 598, 879, 54, 106 });
+	kouken.anim.PushBack({ 652, 883, 30, 102 });
+	
+	kouken.anim.PushBack({ 736, 905, 72, 47 });
+	kouken.anim.PushBack({ 682, 913, 54, 39 });
+	
+	
+	
 
+	kouken.anim.loop = true;
+	kouken.anim.speed = 0.1f;
+	kouken.speed.x = 5;
+	
 	return true;
 }
 
@@ -72,7 +78,13 @@ update_status ModuleParticles::Update()
 		}
 		else if(SDL_GetTicks() >= p->born)
 		{
-			App->render->Blit(graphics, p->position.x, p->position.y, &(p->anim.GetCurrentFrame()));
+		
+			App->render->Blit(graphics, p->position.x + 50, p->position.y - 100, &(p->anim.GetCurrentFrame()));
+			
+		/*	SDL_Rect prueba = {App->player->position.x,App->player->position.y,300,50 };
+			SDL_SetRenderDrawColor(App->render->renderer, 255, 0, 0, 0);
+			SDL_RenderDrawRect(App->render->renderer, &prueba);
+			SDL_SetRenderDrawColor(App->render->renderer, 0, 0, 0, 0);*/
 			if(p->fx_played == false)
 			{
 				p->fx_played = true;
@@ -90,9 +102,8 @@ void ModuleParticles::AddParticle(const Particle& particle, int x, int y, Uint32
 {
 	Particle* p = new Particle(particle);
 	p->born = SDL_GetTicks() + delay;
-	p->position.x = x;
-	p->position.y = y;
-
+	p->position.x = App->player->position.x;
+	p->position.y = App->player->position.y;
 	active[last_particle++] = p;
 }
 
