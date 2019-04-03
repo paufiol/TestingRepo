@@ -21,6 +21,7 @@ public:
 
 public:
 
+	Collider * player = nullptr;
 	SDL_Texture* graphics = nullptr;
 	Animation* current_animation = nullptr;
 	Animation idle;

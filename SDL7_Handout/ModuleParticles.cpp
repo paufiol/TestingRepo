@@ -32,6 +32,7 @@ bool ModuleParticles::Start()
 	explosion.anim.PushBack({457, 296, 33, 30});
 	explosion.anim.loop = false;
 	explosion.anim.speed = 0.3f;
+	explosion.life = 500;
 
 	laser.anim.PushBack({232, 103, 16, 12});
 	laser.anim.PushBack({249, 103, 16, 12});
@@ -111,9 +112,11 @@ void ModuleParticles::OnCollision(Collider* c1, Collider* c2)
 {
 	for(uint i = 0; i < MAX_ACTIVE_PARTICLES; ++i)
 	{
+
 		// Always destroy particles that collide
 		if(active[i] != nullptr && active[i]->collider == c1)
 		{
+			App->particles->AddParticle(App->particles->explosion, c1->rect.x, c1->rect.y, COLLIDER_NONE);
 			delete active[i];
 			active[i] = nullptr;
 			break;
