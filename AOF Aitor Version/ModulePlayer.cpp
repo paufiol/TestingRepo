@@ -6,13 +6,14 @@
 #include "ModulePlayer.h"
 #include "ModuleParticles.h"
 #include "ModuleAudio.h"
+#include "ModuleCollision.h"
 
 // Reference at https://www.youtube.com/watch?v=OEhmUuehGOA
 
 ModulePlayer::ModulePlayer()
 {
 	position.x = 100;
-	position.y = 220;
+	position.y = 112;
 
 	// idle animation (arcade sprite sheet)
 	idle.PushBack({0, 8, 66, 108});
@@ -50,8 +51,8 @@ ModulePlayer::ModulePlayer()
 	koukenR.speed = 0.2f;
 
 
-	//AQUI
-	// TODO 4: Make ryu walk backwards with the correct animations
+	//AQUI haced que de patadas
+	
 }
 
 ModulePlayer::~ModulePlayer()
@@ -63,6 +64,7 @@ bool ModulePlayer::Start()
 	LOG("Loading player textures");
 	bool ret = true;
 	graphics = App->textures->Load("ryo.png"); // arcade version
+	player = App->collision->AddCollider({ position.x, position.y-108, 57, 108 }, COLLIDER_PLAYER, this);
 	return ret;
 }
 
@@ -75,33 +77,33 @@ update_status ModulePlayer::Update()
 	 
 	if(!jumplock && !punchlock && !koukenlock)
 	{
-		if (App->input->keyboard[SDL_SCANCODE_D] == 1)
+		if (App->input->keyboard[SDL_SCANCODE_D] == KEY_STATE::KEY_DOWN)
 		{
 			current_animation = &forward;
 			position.x += speed;
 		}
 
-		if (App->input->keyboard[SDL_SCANCODE_A] == 1)
+		if (App->input->keyboard[SDL_SCANCODE_A] == KEY_STATE::KEY_DOWN)
 		{
 			current_animation = &forward;
 			position.x -= speed;
 		}
 
-		if (App->input->keyboard[SDL_SCANCODE_W] == 1) {
+		if (App->input->keyboard[SDL_SCANCODE_W] == KEY_STATE::KEY_DOWN) {
 			//current_animation = &jump;
 			jumplock = true;
 		}
 		
-		if (App->input->keyboard[SDL_SCANCODE_Q] == 1) {
+		if (App->input->keyboard[SDL_SCANCODE_Q] == KEY_STATE::KEY_DOWN) {
 			current_animation = &punch;
 			punchlock = true; 
 		}
 
 		if (App->input->keyboard[SDL_SCANCODE_F] == KEY_STATE::KEY_DOWN) {
 			current_animation = &koukenR;
-			App->particles->AddParticle(App->particles->kouken, position.x , position.y , 0);
+			App->particles->AddParticle(App->particles->kouken, position.x, position.y, COLLIDER_PLAYER_SHOT);
 
-			//App->audio->PlayChunk(App->audio->chunks[0]);
+			
 			koukenlock = true;
 		}
 	}
@@ -136,7 +138,9 @@ update_status ModulePlayer::Update()
 	// Draw everything --------------------------------------
 	SDL_Rect r = current_animation->GetCurrentFrame();
 
-	App->render->Blit(graphics, position.x, position.y - r.h, &r);
+	player->SetPos(position.x, position.y);
+
+	App->render->Blit(graphics, position.x, position.y, &r);
 	
 	return UPDATE_CONTINUE;
 }

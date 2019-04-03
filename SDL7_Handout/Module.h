@@ -13,7 +13,7 @@ private:
 public:
 	virtual ~Module() {}
 
-	// Game execution phases ---
+
 	virtual bool Init()					{ return true; }
 	virtual bool Start()					{ return true; }
 	virtual update_status PreUpdate()		{ return update_status::UPDATE_CONTINUE; }
@@ -21,7 +21,7 @@ public:
 	virtual update_status PostUpdate() 	{ return update_status::UPDATE_CONTINUE; }
 	virtual bool CleanUp()				{ return true; }
 	
-	// Module activation ---
+	
 	bool IsEnabled() const				{ return enabled; }
 
 	void Enable()

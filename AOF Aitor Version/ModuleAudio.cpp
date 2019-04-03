@@ -79,12 +79,15 @@ Mix_Chunk * ModuleAudio::LoadChunk(const char* path)
 		LOG("Mix_LoadWAV: %s\n", Mix_GetError());
 			
 	};
+	chunk = chunks[chunk_number];
+	chunk_number++;
+	if (chunk_number == MAX_CHUNKS) chunk_number %= MAX_CHUNKS;
 	return chunk;
 }
 
 bool ModuleAudio::PlayChunk(Mix_Chunk * sound)
 {
-	Mix_PlayChannel(-1, sound, 1);
+	Mix_PlayChannel(-1, sound, 0);
 	return true;
 }
 
@@ -101,7 +104,7 @@ bool ModuleAudio::PlayMusic(const char* path, int loops)
 		ret = false; 
 	};
 
-	if (Mix_FadeInMusic(music, loops, 3000) < 0) {
+	if (Mix_FadeInMusic(music, loops, 2000) < 0) {
 		LOG("Mix_PlayMusic: %s\n", Mix_GetError());
 		ret = false;
 	}

@@ -6,6 +6,7 @@
 #include "ModuleParticles.h"
 #include "ModuleAudio.h"
 #include "ModulePlayer.h"
+#include "ModuleCollision.h"
 
 #include "SDL/include/SDL_timer.h"
 
@@ -23,6 +24,7 @@ bool ModuleParticles::Start()
 {
 	LOG("Loading particles");
 	graphics = App->textures->Load("ryo.png");
+	App->audio->koukenFx = App->audio->LoadChunk("kouken.ogg"); 
 
 	// Explosion particle //LAS COORDENADAS SE TIENEN QUE CAMBIAR
 	//kouken.anim.PushBack({ 632, 348, 57, 108 });
@@ -63,7 +65,7 @@ bool ModuleParticles::CleanUp()
 // Update: draw background
 update_status ModuleParticles::Update()
 {
-	App->audio->koukenFx = App->audio->LoadChunk("kouken.ogg");
+	//Aquí habia una variable declarada, mucho cuidado, las variables se inician en Start() o Init()
 	for(uint i = 0; i < MAX_ACTIVE_PARTICLES; ++i)
 	{
 		Particle* p = active[i];
@@ -79,7 +81,7 @@ update_status ModuleParticles::Update()
 		else if(SDL_GetTicks() >= p->born)
 		{
 		
-			App->render->Blit(graphics, p->position.x + 50, p->position.y - 100, &(p->anim.GetCurrentFrame()));
+			App->render->Blit(graphics, p->position.x, p->position.y, &(p->anim.GetCurrentFrame()));
 			
 		/*	SDL_Rect prueba = {App->player->position.x,App->player->position.y,300,50 };
 			SDL_SetRenderDrawColor(App->render->renderer, 255, 0, 0, 0);
@@ -98,15 +100,39 @@ update_status ModuleParticles::Update()
 	return UPDATE_CONTINUE;
 }
 
-void ModuleParticles::AddParticle(const Particle& particle, int x, int y, Uint32 delay)
+void ModuleParticles::AddParticle(const Particle& particle, int x, int y, COLLIDER_TYPE collider_type, Uint32 delay)
 {
-	Particle* p = new Particle(particle);
-	p->born = SDL_GetTicks() + delay;
-	p->position.x = App->player->position.x;
-	p->position.y = App->player->position.y;
-	active[last_particle++] = p;
+	for (uint i = 0; i < MAX_ACTIVE_PARTICLES; ++i)
+	{
+		if (active[i] == nullptr)
+		{
+			Particle* p = new Particle(particle);
+			p->born = SDL_GetTicks() + delay;
+			p->position.x = x;
+			p->position.y = y;
+			if (collider_type != COLLIDER_NONE)
+				p->collider = App->collision->AddCollider(p->anim.GetCurrentFrame(), collider_type, this);
+			active[i] = p;
+			break;
+		}
+	}
 }
 
+void ModuleParticles::OnCollision(Collider* c1, Collider* c2)
+{
+	for (uint i = 0; i < MAX_ACTIVE_PARTICLES; ++i)
+	{
+
+		// Always destroy particles that collide
+		if (active[i] != nullptr && active[i]->collider == c1)
+		{
+			
+			delete active[i];
+			active[i] = nullptr;
+			break;
+		}
+	}
+}
 // -------------------------------------------------------------
 // -------------------------------------------------------------
 

@@ -29,7 +29,9 @@ public:
 	Mix_Chunk * chunks[MAX_CHUNKS];
 	Mix_Music * music; 
 
-	Mix_Chunk* koukenFx;
+	int chunk_number = 0;
+
+	Mix_Chunk* koukenFx;//Idealmente esto solo es como nombre de comodidad, solo un puntero, lo importante es chunks, para luego limpiar todos los chunks y evitar M. Leaks
 };
 
 #endif // __ModuleAudio_H__
