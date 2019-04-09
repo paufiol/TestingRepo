@@ -26,15 +26,16 @@ bool ModuleParticles::Start()
 	graphics = App->textures->Load("ryo.png");
 	App->audio->koukenFx = App->audio->LoadChunk("kouken.ogg"); 
 
-	// Explosion particle //LAS COORDENADAS SE TIENEN QUE CAMBIAR
 	//kouken.anim.PushBack({ 632, 348, 57, 108 });
-	kouken.anim.PushBack({ 598, 879, 54, 106 });
-	kouken.anim.PushBack({ 652, 883, 30, 102 });
-	
+		// Sprites super ataque
+		//kouken.anim.PushBack({ 598, 879, 54, 106 });
+		//kouken.anim.PushBack({ 652, 883, 30, 102 });
+
+
 	kouken.anim.PushBack({ 736, 905, 72, 47 });
 	kouken.anim.PushBack({ 682, 913, 54, 39 });
-	
-	
+	kouken.anim.PushBack({ 808, 916, 53, 36 });
+	kouken.anim.PushBack({ 861, 931, 36, 21 });
 	
 
 	kouken.anim.loop = true;
